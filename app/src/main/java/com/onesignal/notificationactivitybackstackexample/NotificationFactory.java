@@ -5,8 +5,10 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -18,6 +20,9 @@ class NotificationFactory {
    static void create(@NonNull final Context context) {
       String channelId = NotificationChannelFactory.create(context);
       Notification notification = createNotification(context, channelId);
+      if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+         return;
+      }
       NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification);
    }
 
@@ -30,6 +35,7 @@ class NotificationFactory {
          .setContentTitle("Activity backstack test")
          .setContentText("Tap me after swiping away the app")
          .setSmallIcon(android.R.drawable.ic_popup_reminder)
+              .setAutoCancel(true)
          .setContentIntent(createIntent(context))
          .build();
    }
